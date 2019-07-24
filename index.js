@@ -26,12 +26,12 @@ app.use(
   (req, res, next) => {
     res.locals.connectorAuthorization = req.header('x-connector-authorization')
     res.locals.authorization = req.header('authorization')
-
-    console.log(`----`)
-    console.log(`AUTH: ${res.locals.authorization}`)
-    console.log(`**`)
-    console.log(`X-CONN-AUTH: ${res.locals.connectorAuthorization}`)
-    
+    if (process.env.DEBUG) {
+      console.log(`----`)
+      console.log(`AUTH: ${res.locals.authorization}`)
+      console.log(`**`)
+      console.log(`X-CONN-AUTH: ${res.locals.connectorAuthorization}`)
+    }
     next()
   }
 )

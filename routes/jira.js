@@ -34,7 +34,6 @@ async function getCustomerRequestsPendingApproval(connectorAuthorization) {
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
 async function getApprovalDetail(issueKey, connectorAuthorization) {
-    //https://api.atlassian.com/ex/jira/cac1784e-ee56-43f1-a806-593cb9c22d00/rest/servicedeskapi/request/10013/approval
     const options = {
         uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/approval`,
         method: 'GET',
@@ -54,7 +53,6 @@ async function getApprovalDetail(issueKey, connectorAuthorization) {
  * @returns final decision if it was approved or declined from the response
  */
 async function approveOrDenyApproval(userDecision, issueKey, approvalId, connectorAuthorization) {
-    // https://api.atlassian.com/ex/jira/cac1784e-ee56-43f1-a806-593cb9c22d00/rest/servicedeskapi/request/FSDP-14/approval/7
     const options = {
         uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/approval/${approvalId}`,
         method: 'POST',
@@ -94,7 +92,9 @@ function getFieldValueForName(requestFieldValues, desiredName, desiredReturnFiel
  */
 function makeCardFromCustomerRequest(req, customerRequest) {
 
-    console.log(`ACTION URL: ${discovery.prepareURL(req, '/actions')}`)
+    if (process.env.DEBUG) {
+        console.log(`ACTION URL: ${discovery.prepareURL(req, '/actions')}`)
+    }
 
     var sha256 = crypto.createHash('sha256')
     sha256.update(customerRequest.issueKey, 'utf8')
@@ -207,7 +207,9 @@ async function handleCards(req, res) {
         const responseJSON = {
             objects: cardArray
         }
-        console.log(`Sending status 200 and cardArray with ${cardArray.length} cards`)
+        if (process.env.DEBUG) {
+            console.log(`Sending status 200 and cardArray with ${cardArray.length} cards`)
+        }
         res.status(200).json(responseJSON)
 
     } catch (error) {
@@ -239,16 +241,17 @@ async function handleApprovalAction(req, res) {
 
         const result = await approveOrDenyApproval(decision, issueKey, approval.id, connectorAuthorization)
 
-        console.log(`Sending status 200 and action with ${result} result`)
+        if (process.env.DEBUG) {
+            console.log(`Sending status 200 and action with ${result} result`)
+        }
+        
         res.status(200).json({
             status: result
         })
 
     } catch (error) {
         console.log(error)
-        res.status(400).json({
-            'error': error
-        })
+        res.status(400).send()
     }
 }
 
