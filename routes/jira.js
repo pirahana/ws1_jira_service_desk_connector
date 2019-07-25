@@ -105,14 +105,19 @@ function makeCardFromCustomerRequest(req, customerRequest) {
         },
         body: {
             fields: [{
+                    type: 'COMMENT',
+                    title: 'Description',
+                    description: `${getFieldValueForName(customerRequest.requestFieldValues,'description', 'value')}`,
+                },
+                {
                     type: 'GENERAL',
                     title: 'Reporter',
                     description: `${customerRequest.reporter.displayName}`
                 },
                 {
                     type: 'GENERAL',
-                    title: `${getFieldValueForName(customerRequest.requestFieldValues,'description', 'label')}`,
-                    description: `${getFieldValueForName(customerRequest.requestFieldValues,'description', 'value')}`
+                    title: `Request Type`,
+                    description: `${customerRequest.requestType.name}`
                 },
                 {
                     type: 'GENERAL',
@@ -125,23 +130,9 @@ function makeCardFromCustomerRequest(req, customerRequest) {
                     description: `${customerRequest.createdDate.friendly}`
                 },
             ],
-            description: `${getFieldValueForName(customerRequest.requestFieldValues,'description', 'value')}`
+            description: `${customerRequest._links.web}`
         },
         actions: [{
-                "action_key": "OPEN_IN",
-                "id": uuidv4(),
-                "user_input": [],
-                "request": {},
-                "repeatable": true,
-                "primary": false,
-                "label": "View",
-                "completed_label": "View",
-                "type": "GET",
-                "url": {
-                    "href": `${customerRequest._links.web}`
-                }
-            },
-            {
                 "action_key": "DIRECT",
                 "id": uuidv4(),
                 "user_input": [],
@@ -167,7 +158,7 @@ function makeCardFromCustomerRequest(req, customerRequest) {
                     "issueKey": customerRequest.issueKey
                 },
                 "repeatable": false,
-                "primary": true,
+                "primary": false,
                 "label": "Decline",
                 "completed_label": "Declined",
                 "type": "POST",
@@ -180,7 +171,9 @@ function makeCardFromCustomerRequest(req, customerRequest) {
         backend_id: `${customerRequest.issueKey}`,
         hash: sha256.digest('base64'),
         header: {
-            title: `${customerRequest.issueKey} : ${customerRequest.requestType.name}`
+            title: `${getFieldValueForName(customerRequest.requestFieldValues,'summary', 'value')}`,
+            subtitle: [`${customerRequest.issueKey}`]
+
         }
 
     }
@@ -244,7 +237,7 @@ async function handleApprovalAction(req, res) {
         if (process.env.DEBUG) {
             console.log(`Sending status 200 and action with ${result} result`)
         }
-        
+
         res.status(200).json({
             status: result
         })
