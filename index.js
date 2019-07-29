@@ -3,10 +3,10 @@ const path = require('path')
 const bodyParser = require('body-parser')
 require('dotenv').config()
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT
 
 const handleDiscovery = require('./routes/discovery').discovery
-const vidm = require('./vidm')
+const vidm = require('./routes/vidm')
 const jira = require('./routes/jira')
 const handleCards = jira.handleCards
 const handleActions = jira.handleActions
