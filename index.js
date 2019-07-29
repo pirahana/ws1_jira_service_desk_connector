@@ -6,7 +6,7 @@ require('dotenv').config()
 const PORT = process.env.PORT;
 
 const handleDiscovery = require('./routes/discovery').discovery
-const vidm = require('./ws1_connector_common/vidm')
+const vidm = require('./vidm')
 const jira = require('./routes/jira')
 const handleCards = jira.handleCards
 const handleActions = jira.handleActions
