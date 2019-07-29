@@ -11,91 +11,89 @@ The discovery URL is of the form:
 
 The sample card looks something like this:
 
-    {
-        "objects": [{
-            "image": {
-                "href": "http://localhost:9191/images/connector.png"
-            },
-            "body": {
-                "fields": [{
-                        "type": "GENERAL",
-                        "title": "Reporter",
-                        "description": "David Customer"
-                    },
-                    {
-                        "type": "GENERAL",
-                        "title": "Phone details and justification",
-                        "description": "Sample details and justification"
-                    },
-                    {
-                        "type": "GENERAL",
-                        "title": "Status",
-                        "description": "Waiting for approval"
-                    },
-                    {
-                        "type": "GENERAL",
-                        "title": "Date Created",
-                        "description": "Today 2:39 PM"
-                    }
-                ],
-                "description": "Sample details and justification"
-            },
-            "actions": [{
-                    "action_key": "OPEN_IN",
-                    "id": "02fc1108-ec9e-481d-8773-432967540037",
-                    "user_input": [],
-                    "request": {},
-                    "repeatable": true,
-                    "primary": false,
-                    "label": "View",
-                    "completed_label": "View",
-                    "type": "GET",
-                    "url": {
-                        "href": "https://mobileflows.atlassian.net/servicedesk/customer/portal/1/FSDP-32"
-                    }
-                },
+        {
+            "objects": [
                 {
-                    "action_key": "DIRECT",
-                    "id": "ec10e9e5-71b2-44d3-aba6-196836bc6008",
-                    "user_input": [],
-                    "request": {
-                        "decision": "approve",
-                        "issueKey": "FSDP-32"
+                    "image": {
+                        "href": "https://{base_url}/jiraservicedesk/images/connector.png"
                     },
-                    "repeatable": false,
-                    "primary": true,
-                    "label": "Approve",
-                    "completed_label": "Approved",
-                    "type": "POST",
-                    "url": {
-                        "href": "https://dev.hero.vmwservices.com/connectors/foo/bar/servicedesk/actions"
-                    }
-                },
-                {
-                    "action_key": "DIRECT",
-                    "id": "9ec88082-7dd9-425a-b0a1-51645cce6410",
-                    "user_input": [],
-                    "request": {
-                        "decision": "decline",
-                        "issueKey": "FSDP-32"
+                    "body": {
+                        "fields": [
+                            {
+                                "type": "COMMENT",
+                                "title": "Description",
+                                "description": "I need an iPhone XS Max 256GB for testing the 2020 iOS14 alpha."
+                            },
+                            {
+                                "type": "GENERAL",
+                                "title": "Reporter",
+                                "description": "David Customer"
+                            },
+                            {
+                                "type": "GENERAL",
+                                "title": "Request Type",
+                                "description": "New mobile device"
+                            },
+                            {
+                                "type": "GENERAL",
+                                "title": "Status",
+                                "description": "Waiting for approval"
+                            },
+                            {
+                                "type": "GENERAL",
+                                "title": "Date Created",
+                                "description": "Today 3:32 PM"
+                            }
+                        ],
+                        "description": "https://{jsd_instance}.atlassian.net/servicedesk/customer/portal/1/FSDP-41"
                     },
-                    "repeatable": false,
-                    "primary": true,
-                    "label": "Decline",
-                    "completed_label": "Declined",
-                    "type": "POST",
-                    "url": {
-                        "href": "https://dev.hero.vmwservices.com/connectors/foo/bar/servicedesk/actions"
+                    "actions": [
+                        {
+                            "action_key": "DIRECT",
+                            "id": "41d5db66-eb92-42be-930e-ca1bc7859f1e",
+                            "user_input": [],
+                            "request": {
+                                "decision": "approve",
+                                "issueKey": "FSDP-41"
+                            },
+                            "repeatable": false,
+                            "primary": true,
+                            "label": "Approve",
+                            "completed_label": "Approved",
+                            "type": "POST",
+                            "url": {
+                                "href": "https://prod.hero.vmwservices.com/hero/connectors/{connectorid}/card/jiraservicedesk/actions"
+                            }
+                        },
+                        {
+                            "action_key": "DIRECT",
+                            "id": "4b9e26e7-88a8-4205-a692-1724c25799b9",
+                            "user_input": [],
+                            "request": {
+                                "decision": "decline",
+                                "issueKey": "FSDP-41"
+                            },
+                            "repeatable": false,
+                            "primary": false,
+                            "label": "Decline",
+                            "completed_label": "Declined",
+                            "type": "POST",
+                            "url": {
+                                "href": "https://prod.hero.vmwservices.com/hero/connectors/{connectorid}/card/jiraservicedesk/actions"
+                            }
+                        }
+                    ],
+                    "id": "{connectorid}",
+                    "backend_id": "FSDP-41",
+                    "hash": "sDsVlXMKsWovzN2JdniE+uQO75tXx0W4gMGBpQRrzGk=",
+                    "header": {
+                        "title": "iPhone XS Max ",
+                        "subtitle": [
+                            "FSDP-41"
+                        ]
                     }
                 }
-            ],
-            "id": "ef60693a-969b-4492-bb17-2239ac717cde",
-            "backend_id": "FSDP-32",
-            "hash": "B4HjcGI1hBs/YEgSsIQzt3CZhAX68v3U1TVUKH4gcbE=",
-            "header": {
-                "title": "FSDP-32 : New mobile device"
-            }
-        }]
-    }
+            ]
+        }
 
-Each card has three actions -- `View`, `Approve`, or `Decline`
+Each card has two actions -- `Approve`, or `Decline`
