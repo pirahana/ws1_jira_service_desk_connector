@@ -44,6 +44,27 @@ async function getApprovalDetail (issueKey, connectorAuthorization) {
   return rp(options).then(r => JSON.parse(r).values[0] || undefined)
 }
 /**
+ * Given a customer request issue key, retrieve the approval detail to use to approve or deny
+ * @param  {} issueKey identifier for the request
+ * @param  {} connectorAuthorization authorization header including token_type and token
+ */
+async function postComment (issueKey, comment, connectorAuthorization) {
+  const options = {
+    uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/comment`,
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      Authorization: connectorAuthorization
+    },
+    body: {
+      body: comment,
+      public: true
+    },
+    json: true
+  }
+  return rp(options)
+}
+/**
  * Given an issueKey and and approvalId, aprove or decline a request
  * @param  {} userDecision either "approve" or "decline"
  * @param  {} issueKey identifier for the request
@@ -148,9 +169,15 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       }
     },
     {
-      action_key: 'DIRECT',
+      action_key: 'USER_INPUT',
       id: uuidv4(),
-      user_input: [],
+      user_input: [
+        {
+          id: 'comment',
+          label: 'Please explain why the Request is being denied',
+          min_length: 5
+        }
+      ],
       request: {
         decision: 'decline',
         issueKey: customerRequest.issueKey
@@ -221,6 +248,7 @@ async function handleApprovalAction (req, res) {
     const connectorAuthorization = req.header('x-connector-authorization')
     const issueKey = req.body.issueKey
     const decision = req.body.decision
+    const comment = req.body.comment
     console.log(`${issueKey} -- ${decision}`)
 
     const approval = await getApprovalDetail(issueKey, connectorAuthorization)
@@ -230,6 +258,11 @@ async function handleApprovalAction (req, res) {
         error: 'no approval found'
       })
       return
+    }
+
+    if (comment) {
+      const commentResult = await postComment(issueKey, comment, connectorAuthorization)
+      console.log(JSON.stringify(commentResult))
     }
 
     const result = await approveOrDenyApproval(decision, issueKey, approval.id, connectorAuthorization)
