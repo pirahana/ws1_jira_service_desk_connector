@@ -29,7 +29,6 @@ app.use(
     if (process.env.DEBUG) {
       console.log(`----`)
       console.log(`AUTH: ${res.locals.authorization}`)
-      console.log(`**`)
       console.log(`X-CONN-AUTH: ${res.locals.connectorAuthorization}`)
     }
     next()

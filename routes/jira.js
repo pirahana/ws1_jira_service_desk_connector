@@ -230,7 +230,9 @@ async function handleCards (req, res) {
     }
     res.status(200).json(responseJSON)
   } catch (error) {
-    console.log(error)
+    if (process.env.DEBUG) {
+      console.log(error)
+    }
     if (error.statusCode) {
       res.header('X-Backend-Status', [error.statusCode])
     }
@@ -249,7 +251,9 @@ async function handleApprovalAction (req, res) {
     const issueKey = req.body.issueKey
     const decision = req.body.decision
     const comment = req.body.comment
-    console.log(`${issueKey} -- ${decision}`)
+    if (process.env.DEBUG) {
+      console.log(`${issueKey} -- ${decision}`)
+    }
 
     const approval = await getApprovalDetail(issueKey, connectorAuthorization)
 
@@ -262,7 +266,9 @@ async function handleApprovalAction (req, res) {
 
     if (comment) {
       const commentResult = await postComment(issueKey, comment, connectorAuthorization)
-      console.log(JSON.stringify(commentResult))
+      if (process.env.DEBUG) {
+        console.log(JSON.stringify(commentResult))
+      }
     }
 
     const result = await approveOrDenyApproval(decision, issueKey, approval.id, connectorAuthorization)
@@ -275,7 +281,9 @@ async function handleApprovalAction (req, res) {
       status: result
     })
   } catch (error) {
-    console.log(error)
+    if (process.env.DEBUG) {
+      console.log(error)
+    }
     res.status(400).send()
   }
 }
