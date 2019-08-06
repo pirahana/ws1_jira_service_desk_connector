@@ -10,6 +10,7 @@ const vidm = require('./routes/vidm')
 const jira = require('./routes/jira')
 const handleCards = jira.handleCards
 const handleActions = jira.handleActions
+const handleCreateCustomerRequest = jira.handleCreateCustomerRequest
 
 const app = express()
 app.set('trust proxy', true)
@@ -21,7 +22,8 @@ app.use(bodyParser.urlencoded({
 app.use(
   [
     '/cards',
-    '/actions'
+    '/actions',
+    '/createRequest'
   ],
   (req, res, next) => {
     res.locals.connectorAuthorization = req.header('x-connector-authorization')
@@ -39,7 +41,8 @@ app.use(
 app.use(
   [
     '/cards',
-    '/actions'
+    '/actions',
+    '/createRequest'
   ],
   vidm.validate
 )
@@ -49,6 +52,7 @@ app.get('/', handleDiscovery)
 app.use('/images', express.static(path.join(__dirname, 'routes/public/images')))
 app.post('/cards', handleCards)
 app.post('/actions', handleActions)
+app.post('/createCustomerRequest', handleCreateCustomerRequest)
 
 console.log(`CONNECTOR LISTENING ON PORT ${PORT}`)
 app.listen(PORT)

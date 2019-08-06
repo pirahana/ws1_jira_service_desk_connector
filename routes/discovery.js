@@ -69,6 +69,38 @@ function discovery (req, res) {
           href: `${baseURL}/cards`
         }
       }
+    },
+    actions: {
+      createRequest: {
+        url: {
+          href: `${baseURL}/createRequest`
+        },
+        user_input: [
+          {
+            id: 'serviceDeskId',
+            label: 'Service Desk ID'
+          },
+          {
+            id: 'requestTypeId',
+            label: 'Request Type ID'
+          },
+          {
+            id: 'summary',
+            label: 'Summary of the Request',
+            min_length: 1
+          },
+          {
+            id: 'description',
+            label: 'Description of the Request',
+            min_length: 1
+          }
+        ],
+        request: {
+        },
+        label: 'Create Customer Request',
+        type: 'POST',
+        action_key: 'DIRECT'
+      }
     }
   }
   res.json(discoveryJSON)

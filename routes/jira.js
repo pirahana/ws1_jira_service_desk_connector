@@ -1,93 +1,8 @@
-const rp = require('request-promise-native')
 const crypto = require('crypto')
 const uuidv4 = require('uuid/v4')
 const discovery = require('./discovery')
-require('dotenv').config()
+const jiraRest = require('./jira_rest')
 
-/**
- * Returns a list of Customer Approvals assigned to the requesting user
- * @param  {} req request
- * @param  {} res response
- */
-async function getCustomerRequestsPendingApproval (connectorAuthorization) {
-  const options = {
-    uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request`,
-    qs: {
-      requestOwnership: 'APPROVER',
-      requestStatus: 'OPEN_REQUESTS',
-      approvalStatus: 'MY_PENDING_APPROVAL',
-      expand: 'requestType'
-    },
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      Authorization: connectorAuthorization
-    }
-  }
-
-  return rp(options).then(r => JSON.parse(r).values)
-}
-/**
- * Given a customer request issue key, retrieve the approval detail to use to approve or deny
- * @param  {} issueKey identifier for the request
- * @param  {} connectorAuthorization authorization header including token_type and token
- */
-async function getApprovalDetail (issueKey, connectorAuthorization) {
-  const options = {
-    uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/approval`,
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      Authorization: connectorAuthorization
-    }
-  }
-  return rp(options).then(r => JSON.parse(r).values[0] || undefined)
-}
-/**
- * Given a customer request issue key, retrieve the approval detail to use to approve or deny
- * @param  {} issueKey identifier for the request
- * @param  {} connectorAuthorization authorization header including token_type and token
- */
-async function postComment (issueKey, comment, connectorAuthorization) {
-  const options = {
-    uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/comment`,
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      Authorization: connectorAuthorization
-    },
-    body: {
-      body: comment,
-      public: true
-    },
-    json: true
-  }
-  return rp(options)
-}
-/**
- * Given an issueKey and and approvalId, aprove or decline a request
- * @param  {} userDecision either "approve" or "decline"
- * @param  {} issueKey identifier for the request
- * @param  {} approvalId identifier for the approval associated with the request
- * @param  {} connectorAuthorization authorization header including token_type and token
- * @returns final decision if it was approved or declined from the response
- */
-async function approveOrDenyApproval (userDecision, issueKey, approvalId, connectorAuthorization) {
-  const options = {
-    uri: `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request/${issueKey}/approval/${approvalId}`,
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-      Authorization: connectorAuthorization
-    },
-    body: {
-      decision: userDecision
-    },
-    json: true
-  }
-  return rp(options).then(r => r.finalDecision)
-}
 /**
  * Given the fields in a Jira service desk response, find the one that matches and return the value or other field
  * @param  {} requestFieldValues the array of requestFieldValues
@@ -124,7 +39,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
     },
     body: {
       fields: [{
-        type: 'COMMENT',
+        type: 'GENERAL',
         title: 'Description',
         description: `${getFieldValueForName(customerRequest.requestFieldValues, 'description', 'value')}`
       },
@@ -206,6 +121,54 @@ function makeCardFromCustomerRequest (req, customerRequest) {
   return responseCard
 }
 
+function makeStaticTicketCreationCard (req) {
+  var sha256 = crypto.createHash('sha256')
+  sha256.update('create_request', 'utf8')
+  const responseCard = {
+    image: {
+      href: `${discovery.imageURL(req)}`
+    },
+    body: {
+      fields: [],
+      description: `Submit a Request`
+    },
+    actions: [{
+      action_key: 'USER_INPUT',
+      id: uuidv4(),
+      user_input: [
+        {
+          id: 'summary',
+          label: 'Summary',
+          min_length: 1
+        },
+        {
+          id: 'details',
+          label: 'Details',
+          min_length: 1
+        }
+      ],
+      request: {
+      },
+      repeatable: true,
+      primary: true,
+      label: 'Create Request',
+      completed_label: 'Create Request',
+      type: 'POST',
+      url: {
+        href: `${discovery.prepareURL(req, '/actions')}`
+      }
+    }
+    ],
+    id: uuidv4(),
+    backend_id: `create_request`,
+    hash: sha256.digest('base64'),
+    header: {
+      title: `Create Customer Request`
+    }
+  }
+  return responseCard
+}
+
 /**
  * The published card request endpoint
  * @param  {} req
@@ -214,9 +177,11 @@ function makeCardFromCustomerRequest (req, customerRequest) {
 async function handleCards (req, res) {
   try {
     const connectorAuthorization = res.locals.connectorAuthorization
-    const customerRequests = await getCustomerRequestsPendingApproval(connectorAuthorization)
+    const customerRequests = await jiraRest.getCustomerRequestsPendingApproval(connectorAuthorization)
 
     const cardArray = []
+    cardArray.push(makeStaticTicketCreationCard(req)) // static card, temporary
+
     customerRequests.forEach(customerRequest => {
       const card = makeCardFromCustomerRequest(req, customerRequest)
       cardArray.push(card)
@@ -231,7 +196,7 @@ async function handleCards (req, res) {
     res.status(200).json(responseJSON)
   } catch (error) {
     if (process.env.DEBUG) {
-      console.log(error)
+      console.log(error.message || 'Unknown error')
     }
     if (error.statusCode) {
       res.header('X-Backend-Status', [error.statusCode])
@@ -255,7 +220,7 @@ async function handleApprovalAction (req, res) {
       console.log(`${issueKey} -- ${decision}`)
     }
 
-    const approval = await getApprovalDetail(issueKey, connectorAuthorization)
+    const approval = await jiraRest.getApprovalDetail(issueKey, connectorAuthorization)
 
     if (approval === undefined) {
       res.status(400).json({
@@ -265,13 +230,13 @@ async function handleApprovalAction (req, res) {
     }
 
     if (comment) {
-      const commentResult = await postComment(issueKey, comment, connectorAuthorization)
+      const commentResult = await jiraRest.postComment(issueKey, comment, connectorAuthorization)
       if (process.env.DEBUG) {
         console.log(JSON.stringify(commentResult))
       }
     }
 
-    const result = await approveOrDenyApproval(decision, issueKey, approval.id, connectorAuthorization)
+    const result = await jiraRest.approveOrDenyApproval(decision, issueKey, approval.id, connectorAuthorization)
 
     if (process.env.DEBUG) {
       console.log(`Sending status 200 and action with ${result} result`)
@@ -282,7 +247,32 @@ async function handleApprovalAction (req, res) {
     })
   } catch (error) {
     if (process.env.DEBUG) {
-      console.log(error)
+      console.log(error.message || 'Unknown error')
+    }
+    if (error.statusCode) {
+      res.header('X-Backend-Status', [error.statusCode])
+    }
+    res.status(400).send()
+  }
+}
+
+async function handleCreateCustomerRequest (req, res) {
+  try {
+    const connectorAuthorization = req.header('x-connector-authorization')
+    const serviceDeskId = 1
+    const requestTypeId = 1
+    const summary = req.body.summary || 'summary here'
+    const description = req.body.description || 'description here'
+
+    const result = await jiraRest.createCustomerRequest(serviceDeskId, requestTypeId, summary, description, connectorAuthorization)
+    const success = { issueId: result.issueId, issueKey: result.issueKey }
+    res.status(200).json(success)
+  } catch (error) {
+    if (process.env.DEBUG) {
+      console.log(error.message || 'Unknown error')
+    }
+    if (error.statusCode) {
+      res.header('X-Backend-Status', [error.statusCode])
     }
     res.status(400).send()
   }
@@ -290,3 +280,4 @@ async function handleApprovalAction (req, res) {
 
 exports.handleCards = handleCards
 exports.handleActions = handleApprovalAction
+exports.handleCreateCustomerRequest = handleCreateCustomerRequest
