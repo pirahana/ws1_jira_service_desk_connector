@@ -120,7 +120,10 @@ async function createCustomerRequest (serviceDeskId, requestTypeId, summary, des
   }
   return rp(options)
 }
-
+/**
+ * Retrieve the list of Service Desks
+ * @param  {} connectorAuthorization authorization header including token_type and token
+ */
 async function listServiceDesks (connectorAuthorization) {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/servicedesk`,
@@ -142,7 +145,11 @@ async function listServiceDesks (connectorAuthorization) {
     }
     )
 }
-
+/**
+ * Given a serviceDeskId, retrieve the list of RequestTypes that can be made
+ * @param  {} serviceDeskId the ID of the service desk in which to look for request types
+ * @param  {} connectorAuthorization authorization header including token_type and token
+ */
 async function listRequestTypes (serviceDeskId, connectorAuthorization) {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/servicedesk/${serviceDeskId}/requesttype`,

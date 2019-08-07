@@ -41,7 +41,11 @@ async function handleCards (req, res) {
     res.status(400).send()
   }
 }
-
+/**
+ * The published service desk list endpoint
+ * @param  {} req
+ * @param  {} res
+ */
 async function handleListServiceDesks (req, res) {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
@@ -61,7 +65,11 @@ async function handleListServiceDesks (req, res) {
     res.status(400).send()
   }
 }
-
+/**
+ * The published request type list endpoint
+ * @param  {} req
+ * @param  {} res
+ */
 async function handleListRequestTypes (req, res) {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
@@ -133,14 +141,22 @@ async function handleApprovalAction (req, res) {
     res.status(400).send()
   }
 }
-
+/**
+ * The published endpoint to create customer requests
+ * @param  {} req
+ * @param  {} res
+ */
 async function handleCreateCustomerRequest (req, res) {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
-    const serviceDeskId = 1
-    const requestTypeId = 1
-    const summary = req.body.summary || 'summary here'
-    const description = req.body.description || 'description here'
+    const serviceDeskId = req.body.serviceDeskId
+    const requestTypeId = req.body.requestTypeId
+    const summary = req.body.summary
+    const description = req.body.description
+    if (!serviceDeskId || !requestTypeId || !summary || !description) {
+      res.status(400).json({ error: 'Missing required parameters' })
+      return
+    }
 
     const result = await jiraRest.createCustomerRequest(serviceDeskId, requestTypeId, summary, description, connectorAuthorization)
     const success = { issueId: result.issueId, issueKey: result.issueKey }
