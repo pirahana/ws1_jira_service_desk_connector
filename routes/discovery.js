@@ -4,7 +4,7 @@
  *
  * Discovery is the process by which a connector explains its capabilties to the Mobile Flows server
  * The request is an unauthenticated GET and the response is JSON
-*/
+ */
 const urljoin = require('url-join')
 
 /**
@@ -16,9 +16,9 @@ function protocol (req) {
 }
 
 /**
-   * request.hostname is broken in Express 4 so we have to deal with the X-Forwarded- headers ourselves
-   * @param  {} req express request
-   */
+ * request.hostname is broken in Express 4 so we have to deal with the X-Forwarded- headers ourselves
+ * @param  {} req express request
+ */
 function derivedBaseUrl (req) {
   const host = req.headers['x-forwarded-host'] || req.headers.host
   const proto = req.headers['x-forwarded-proto'] || protocol(req)
@@ -37,10 +37,10 @@ function imageURL (req) {
   return `${baseURL}/images/connector.png`
 }
 /**
-   * Combine the various path components to make the URL route to the action
-   * @param  {} req
-   * @param  {} virtualURL
-   */
+ * Combine the various path components to make the URL route to the action
+ * @param  {} req
+ * @param  {} virtualURL
+ */
 function prepareURL (req, virtualURL) {
   const routingPrefix = req.headers['x-routing-prefix'] || ''
   const forwardedPrefix = req.headers['x-forwarded-prefix'] || ''
@@ -48,10 +48,10 @@ function prepareURL (req, virtualURL) {
 }
 
 /**
-   * Return the discovery JSON response that describes the capabilities of this connector
-   * @param  {} req express request
-   * @param  {} res express response
-   */
+ * Return the discovery JSON response that describes the capabilities of this connector
+ * @param  {} req express request
+ * @param  {} res express response
+ */
 function discovery (req, res) {
   const baseURL = derivedBaseUrl(req)
 
@@ -70,19 +70,29 @@ function discovery (req, res) {
         }
       },
       servicedesk: {
-        pollable: true,
+        pollable: false,
         endpoint: {
           href: `${baseURL}/listServiceDesks`
         }
-      }
-    },
-    actions: {
-      createRequest: {
-        url: {
-          href: `${baseURL}/createRequest`
-        },
-        user_input: [
-          {
+      },
+      requesttype: {
+        pollable: false,
+        fields: {
+          servicedeskid: {
+            env: 'SERVICE_DESK_ID',
+            required: true
+          },
+          endpoint: {
+            href: `${baseURL}/listRequestTypes`
+          }
+        }
+      },
+      actions: {
+        createRequest: {
+          url: {
+            href: `${baseURL}/createRequest`
+          },
+          user_input: [{
             id: 'serviceDeskId',
             label: 'Service Desk ID'
           },
@@ -100,24 +110,22 @@ function discovery (req, res) {
             label: 'Description of the Request',
             min_length: 1
           }
-        ],
-        request: {
+          ],
+          request: {},
+          label: 'Create Customer Request',
+          type: 'POST',
+          action_key: 'USER_INPUT'
         },
-        label: 'Create Customer Request',
-        type: 'POST',
-        action_key: 'DIRECT'
-      },
-      listRequestTypes: {
-        url: {
-          href: `${baseURL}/listRequestTypes`
-        },
-        user_input: [
-          {
+        listRequestTypes: {
+          url: {
+            href: `${baseURL}/listRequestTypes`
+          },
+          user_input: [{
             id: 'serviceDeskId',
             label: 'Service Desk ID',
             min_length: 1
-          }
-        ]
+          }]
+        }
       }
     }
   }
