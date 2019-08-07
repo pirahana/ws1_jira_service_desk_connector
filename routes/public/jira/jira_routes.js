@@ -52,7 +52,7 @@ async function handleListServiceDesks (req, res) {
     const serviceDesks = await jiraRest.listServiceDesks(connectorAuthorization)
 
     if (process.env.DEBUG) {
-      console.log(`Sending status 200 and action with ${JSON.stringify(serviceDesks)} result`)
+      console.log(`Sending status 200 and action with ${serviceDesks.length} service desks`)
     }
     res.status(200).json(serviceDesks)
   } catch (error) {
@@ -77,7 +77,7 @@ async function handleListRequestTypes (req, res) {
     const requestTypes = await jiraRest.listRequestTypes(serviceDeskId, connectorAuthorization)
 
     if (process.env.DEBUG) {
-      console.log(`Sending status 200 and action with ${JSON.stringify(requestTypes)} result`)
+      console.log(`Sending status 200 and action with ${requestTypes.length} request types`)
     }
     res.status(200).json(requestTypes)
   } catch (error) {
@@ -173,7 +173,7 @@ async function handleCreateCustomerRequest (req, res) {
 }
 
 exports.handleCards = handleCards
-exports.handleActions = handleApprovalAction
+exports.handleApprovalAction = handleApprovalAction
 exports.handleCreateCustomerRequest = handleCreateCustomerRequest
 exports.handleListServiceDesks = handleListServiceDesks
 exports.handleListRequestTypes = handleListRequestTypes

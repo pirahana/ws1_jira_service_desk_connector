@@ -68,6 +68,12 @@ function discovery (req, res) {
         endpoint: {
           href: `${baseURL}/cards`
         }
+      },
+      servicedesk: {
+        pollable: true,
+        endpoint: {
+          href: `${baseURL}/listServiceDesks`
+        }
       }
     },
     actions: {
@@ -100,6 +106,18 @@ function discovery (req, res) {
         label: 'Create Customer Request',
         type: 'POST',
         action_key: 'DIRECT'
+      },
+      listRequestTypes: {
+        url: {
+          href: `${baseURL}/listRequestTypes`
+        },
+        user_input: [
+          {
+            id: 'serviceDeskId',
+            label: 'Service Desk ID',
+            min_length: 1
+          }
+        ]
       }
     }
   }

@@ -26,7 +26,7 @@ function getFieldValueForName (requestFieldValues, desiredName, desiredReturnFie
    */
 function makeCardFromCustomerRequest (req, customerRequest) {
   if (process.env.DEBUG) {
-    console.log(`ACTION URL: ${discovery.prepareURL(req, '/actions')}`)
+    console.log(`ACTION URL: ${discovery.prepareURL(req, '/approvalAction')}`)
   }
 
   var sha256 = crypto.createHash('sha256')
@@ -79,7 +79,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       completed_label: 'Approved',
       type: 'POST',
       url: {
-        href: `${discovery.prepareURL(req, '/actions')}`
+        href: `${discovery.prepareURL(req, '/approvalAction')}`
       }
     },
     {
@@ -102,7 +102,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       completed_label: 'Declined',
       type: 'POST',
       url: {
-        href: `${discovery.prepareURL(req, '/actions')}`
+        href: `${discovery.prepareURL(req, '/approvalAction')}`
       }
     }
     ],
@@ -119,10 +119,14 @@ function makeCardFromCustomerRequest (req, customerRequest) {
 
   return responseCard
 }
-
+/**
+ * Create a static card for making Customer Requests
+ * @param  {} req request object, used for formatting URLs
+ */
 function makeStaticTicketCreationCard (req) {
+  const createRequest = 'create_request'
   var sha256 = crypto.createHash('sha256')
-  sha256.update('create_request', 'utf8')
+  sha256.update(createRequest, 'utf8')
   const responseCard = {
     image: {
       href: `${discovery.imageURL(req)}`
@@ -154,12 +158,12 @@ function makeStaticTicketCreationCard (req) {
       completed_label: 'Create Request',
       type: 'POST',
       url: {
-        href: `${discovery.prepareURL(req, '/actions')}`
+        href: `${discovery.prepareURL(req, '/createCustomerRequest')}`
       }
     }
     ],
     id: uuidv4(),
-    backend_id: `create_request`,
+    backend_id: createRequest,
     hash: sha256.digest('base64'),
     header: {
       title: `Create Customer Request`

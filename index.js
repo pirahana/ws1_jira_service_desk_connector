@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
 
 const authenticatedAPIs = [
   '/cards',
-  '/actions',
+  '/approvalAction',
   '/createRequest',
   '/listRequestTypes'
 ]
@@ -45,7 +45,7 @@ app.use(
 app.get('/', handleDiscovery)
 app.use('/images', express.static(path.join(__dirname, 'routes/public/images')))
 app.post('/cards', jira.handleCards)
-app.post('/actions', jira.handleActions)
+app.post('/approvalAction', jira.handleApprovalAction)
 app.post('/createCustomerRequest', jira.handleCreateCustomerRequest)
 app.post('/listRequestTypes', jira.handleListRequestTypes)
 app.post('/listServiceDesks', jira.handleListServiceDesks)
