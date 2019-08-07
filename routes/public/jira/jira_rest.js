@@ -1,3 +1,7 @@
+/**
+ * This file contains outbound REST requests to the Jira Service Desk APIs
+ * All exposed methods should be delcared as async and should return a Promise
+ */
 const rp = require('request-promise-native')
 require('dotenv').config()
 
@@ -47,7 +51,7 @@ async function getApprovalDetail (issueKey, connectorAuthorization) {
  * @param  {} issueKey identifier for the request
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function postComment (issueKey, comment, connectorAuthorization) {
+async function postCommentOnRequest (issueKey, comment, connectorAuthorization) {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/${issueKey}/comment`,
     method: 'POST',
@@ -121,4 +125,4 @@ exports.getCustomerRequestsPendingApproval = getCustomerRequestsPendingApproval
 exports.getApprovalDetail = getApprovalDetail
 exports.approveOrDenyApproval = approveOrDenyApproval
 exports.createCustomerRequest = createCustomerRequest
-exports.postComment = postComment
+exports.postCommentOnRequest = postCommentOnRequest

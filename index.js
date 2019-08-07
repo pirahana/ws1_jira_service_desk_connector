@@ -7,7 +7,7 @@ const PORT = process.env.PORT
 
 const handleDiscovery = require('./routes/discovery').discovery
 const vidm = require('./routes/vidm')
-const jira = require('./routes/jira')
+const jira = require('./routes/public/jira/jira_routes')
 const handleCards = jira.handleCards
 const handleActions = jira.handleActions
 const handleCreateCustomerRequest = jira.handleCreateCustomerRequest
