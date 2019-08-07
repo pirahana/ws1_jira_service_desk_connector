@@ -42,6 +42,47 @@ async function handleCards (req, res) {
   }
 }
 
+async function handleListServiceDesks (req, res) {
+  try {
+    const connectorAuthorization = req.header('x-connector-authorization')
+    const serviceDesks = await jiraRest.listServiceDesks(connectorAuthorization)
+
+    if (process.env.DEBUG) {
+      console.log(`Sending status 200 and action with ${JSON.stringify(serviceDesks)} result`)
+    }
+    res.status(200).json(serviceDesks)
+  } catch (error) {
+    if (process.env.DEBUG) {
+      console.log(error.message || 'Unknown error')
+    }
+    if (error.statusCode) {
+      res.header('X-Backend-Status', [error.statusCode])
+    }
+    res.status(400).send()
+  }
+}
+
+async function handleListRequestTypes (req, res) {
+  try {
+    const connectorAuthorization = req.header('x-connector-authorization')
+    const serviceDeskId = req.body.serviceDeskId || 1
+    const requestTypes = await jiraRest.listRequestTypes(serviceDeskId, connectorAuthorization)
+
+    if (process.env.DEBUG) {
+      console.log(`Sending status 200 and action with ${JSON.stringify(requestTypes)} result`)
+    }
+    res.status(200).json(requestTypes)
+  } catch (error) {
+    if (process.env.DEBUG) {
+      console.log(error.message || 'Unknown error')
+    }
+    if (error.statusCode) {
+      res.header('X-Backend-Status', [error.statusCode])
+    }
+    res.status(400).send()
+  }
+}
+
 /**
  * The published approval request endpoint
  * @param  {} req
@@ -118,3 +159,5 @@ async function handleCreateCustomerRequest (req, res) {
 exports.handleCards = handleCards
 exports.handleActions = handleApprovalAction
 exports.handleCreateCustomerRequest = handleCreateCustomerRequest
+exports.handleListServiceDesks = handleListServiceDesks
+exports.handleListRequestTypes = handleListRequestTypes

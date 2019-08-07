@@ -5,7 +5,7 @@
 const rp = require('request-promise-native')
 require('dotenv').config()
 
-const SERVICEDESK_REQUEST_API = `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi/request`
+const SERVICEDESK_REQUEST_API = `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi`
 
 /**
  * Returns a list of Customer Approvals assigned to the requesting user
@@ -14,7 +14,7 @@ const SERVICEDESK_REQUEST_API = `https://api.atlassian.com/ex/jira/${process.env
  */
 async function getCustomerRequestsPendingApproval (connectorAuthorization) {
   const options = {
-    uri: `${SERVICEDESK_REQUEST_API}`,
+    uri: `${SERVICEDESK_REQUEST_API}/request`,
     qs: {
       requestOwnership: 'APPROVER',
       requestStatus: 'OPEN_REQUESTS',
@@ -37,7 +37,7 @@ async function getCustomerRequestsPendingApproval (connectorAuthorization) {
  */
 async function getApprovalDetail (issueKey, connectorAuthorization) {
   const options = {
-    uri: `${SERVICEDESK_REQUEST_API}/${issueKey}/approval`,
+    uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/approval`,
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -53,7 +53,7 @@ async function getApprovalDetail (issueKey, connectorAuthorization) {
  */
 async function postCommentOnRequest (issueKey, comment, connectorAuthorization) {
   const options = {
-    uri: `${SERVICEDESK_REQUEST_API}/${issueKey}/comment`,
+    uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/comment`,
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -77,7 +77,7 @@ async function postCommentOnRequest (issueKey, comment, connectorAuthorization) 
  */
 async function approveOrDenyApproval (userDecision, issueKey, approvalId, connectorAuthorization) {
   const options = {
-    uri: `${SERVICEDESK_REQUEST_API}/${issueKey}/approval/${approvalId}`,
+    uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/approval/${approvalId}`,
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -101,7 +101,7 @@ async function approveOrDenyApproval (userDecision, issueKey, approvalId, connec
  */
 async function createCustomerRequest (serviceDeskId, requestTypeId, summary, description, connectorAuthorization) {
   const options = {
-    uri: `${SERVICEDESK_REQUEST_API}`,
+    uri: `${SERVICEDESK_REQUEST_API}/request`,
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -121,8 +121,54 @@ async function createCustomerRequest (serviceDeskId, requestTypeId, summary, des
   return rp(options)
 }
 
+async function listServiceDesks (connectorAuthorization) {
+  const options = {
+    uri: `${SERVICEDESK_REQUEST_API}/servicedesk`,
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+      Authorization: connectorAuthorization
+    }
+  }
+  return rp(options)
+    .then(result => JSON.parse(result).values)
+    .then(r => {
+      var result = []
+      r.forEach(element => {
+        result.push({ id: element.id, projectId: element.projectId, projectName: element.projectName, projectKey: element.projectKey })
+      })
+      return result
+    }
+    )
+}
+
+async function listRequestTypes (serviceDeskId, connectorAuthorization) {
+  const options = {
+    uri: `${SERVICEDESK_REQUEST_API}/servicedesk/${serviceDeskId}/requesttype`,
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+      Authorization: connectorAuthorization
+    }
+  }
+  return rp(options)
+    .then(result => JSON.parse(result).values)
+    .then(r => {
+      var result = []
+      r.forEach(element => {
+        result.push({ id: element.id, name: element.name, issueTypeId: element.issueTypeId, serviceDeskId: element.serviceDeskId })
+      })
+      return result
+    }
+    )
+}
+
 exports.getCustomerRequestsPendingApproval = getCustomerRequestsPendingApproval
 exports.getApprovalDetail = getApprovalDetail
 exports.approveOrDenyApproval = approveOrDenyApproval
 exports.createCustomerRequest = createCustomerRequest
 exports.postCommentOnRequest = postCommentOnRequest
+exports.listServiceDesks = listServiceDesks
+exports.listRequestTypes = listRequestTypes
