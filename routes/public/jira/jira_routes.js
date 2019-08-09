@@ -154,18 +154,19 @@ async function handleApprovalAction (req, res) {
 }
 /**
  * The published endpoint to create customer requests
+ * Note: For now, assume serviceDesk ID 1 and requestType ID 1 if not specified
  * @param  {} req
  * @param  {} res
  */
 async function handleCreateCustomerRequest (req, res) {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
-    const serviceDeskId = req.body.serviceDeskId
-    const requestTypeId = req.body.requestTypeId
-    const summary = req.body.summary
-    const description = req.body.description
+    const serviceDeskId = req.body.serviceDeskId || 1
+    const requestTypeId = req.body.requestTypeId || 1
+    const summary = req.body.summary || 'Request for Assistance'
+    const description = req.body.description || 'Default description here'
     if (!serviceDeskId || !requestTypeId || !summary || !description) {
-      res.status(400).json({ error: 'Missing required parameters' })
+      res.status(400).json({ error: 'Missing required parameters (serviceDeskId, requestTypeId, summary, description)' })
       return
     }
 
