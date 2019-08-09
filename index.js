@@ -41,6 +41,8 @@ app.use(
   vidm.validate
 )
 
+var hash = ''
+
 // various request endpoints
 app.get('/', handleDiscovery)
 app.use('/images', express.static(path.join(__dirname, 'routes/public/images')))
@@ -49,6 +51,10 @@ app.post('/approvalAction', jira.handleApprovalAction)
 app.post('/createCustomerRequest', jira.handleCreateCustomerRequest)
 app.post('/listRequestTypes', jira.handleListRequestTypes)
 app.post('/listServiceDesks', jira.handleListServiceDesks)
+app.post('/setHash', function (req, res) {
+  jira.setHash(req.body.hash)
+  res.status(200).json({ new_hash: req.body.hash })
+})
 
 console.log(`CONNECTOR LISTENING ON PORT ${PORT}`)
 app.listen(PORT)

@@ -124,7 +124,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
  * @param  {} req request object, used for formatting URLs
  */
 function makeStaticTicketCreationCard (req) {
-  const createRequest = 'create_request'
+  const createRequest = req.hash || 'create_request'
   var sha256 = crypto.createHash('sha256')
   sha256.update(createRequest, 'utf8')
   const responseCard = {
@@ -169,6 +169,8 @@ function makeStaticTicketCreationCard (req) {
       title: `Create Customer Request`
     }
   }
+
+  console.log(responseCard)
   return responseCard
 }
 

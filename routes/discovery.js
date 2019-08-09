@@ -69,64 +69,7 @@ function discovery (req, res) {
           href: `${baseURL}/cards`
         }
       },
-      servicedesk: {
-        pollable: false,
-        endpoint: {
-          href: `${baseURL}/listServiceDesks`
-        }
-      },
-      requesttype: {
-        pollable: false,
-        fields: {
-          servicedeskid: {
-            env: 'SERVICE_DESK_ID',
-            required: true
-          },
-          endpoint: {
-            href: `${baseURL}/listRequestTypes`
-          }
-        }
-      },
-      actions: {
-        createRequest: {
-          url: {
-            href: `${baseURL}/createRequest`
-          },
-          user_input: [{
-            id: 'serviceDeskId',
-            label: 'Service Desk ID'
-          },
-          {
-            id: 'requestTypeId',
-            label: 'Request Type ID'
-          },
-          {
-            id: 'summary',
-            label: 'Summary of the Request',
-            min_length: 1
-          },
-          {
-            id: 'description',
-            label: 'Description of the Request',
-            min_length: 1
-          }
-          ],
-          request: {},
-          label: 'Create Customer Request',
-          type: 'POST',
-          action_key: 'USER_INPUT'
-        },
-        listRequestTypes: {
-          url: {
-            href: `${baseURL}/listRequestTypes`
-          },
-          user_input: [{
-            id: 'serviceDeskId',
-            label: 'Service Desk ID',
-            min_length: 1
-          }]
-        }
-      }
+      actions: {}
     }
   }
   res.json(discoveryJSON)

@@ -6,6 +6,16 @@
 const jiraRest = require('./jira_rest')
 const jiraUtil = require('./jira_util')
 
+var hash = 'create_card'
+/**
+ * Set the backend_id and update the hash for the create card, to allow for updates and forcing a new card
+ * @param  {} newHash
+ */
+function setHash (newHash) {
+  if (newHash) {
+    hash = newHash
+  }
+}
 /**
  * The published card request endpoint
  * @param  {} req
@@ -17,6 +27,7 @@ async function handleCards (req, res) {
     const customerRequests = await jiraRest.getCustomerRequestsPendingApproval(connectorAuthorization)
 
     const cardArray = []
+    req.hash = hash
     cardArray.push(jiraUtil.makeStaticTicketCreationCard(req)) // static card, temporary
 
     customerRequests.forEach(customerRequest => {
@@ -172,6 +183,7 @@ async function handleCreateCustomerRequest (req, res) {
   }
 }
 
+exports.setHash = setHash
 exports.handleCards = handleCards
 exports.handleApprovalAction = handleApprovalAction
 exports.handleCreateCustomerRequest = handleCreateCustomerRequest
