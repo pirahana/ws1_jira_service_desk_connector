@@ -68,8 +68,7 @@ function discovery (req, res) {
         endpoint: {
           href: `${baseURL}/cards`
         }
-      },
-      actions: {}
+      }
     }
   }
   if (process.env.DEBUG) {
