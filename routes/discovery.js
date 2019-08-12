@@ -72,6 +72,9 @@ function discovery (req, res) {
       actions: {}
     }
   }
+  if (process.env.DEBUG) {
+    console.log('discovery requested')
+  }
   res.json(discoveryJSON)
 }
 
