@@ -170,7 +170,6 @@ function makeStaticTicketCreationCard (req) {
     }
   }
 
-  console.log(responseCard)
   return responseCard
 }
 
