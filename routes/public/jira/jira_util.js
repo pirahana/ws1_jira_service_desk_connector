@@ -54,16 +54,15 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       },
       {
         type: 'GENERAL',
-        title: 'Status',
-        description: `${customerRequest.currentStatus.status}`
+        title: 'Date Created',
+        description: `${customerRequest.createdDate.friendly}`
       },
       {
         type: 'GENERAL',
-        title: 'Date Created',
-        description: `${customerRequest.createdDate.friendly}`
+        title: 'Status',
+        description: `${customerRequest.currentStatus.status}`
       }
-      ],
-      description: `${customerRequest._links.web}`
+      ]
     },
     actions: [{
       action_key: 'DIRECT',
@@ -88,7 +87,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       user_input: [
         {
           id: 'comment',
-          label: 'Please explain why the Request is being denied',
+          label: 'Please explain why the Request is being declined',
           min_length: 5
         }
       ],
@@ -111,7 +110,11 @@ function makeCardFromCustomerRequest (req, customerRequest) {
     hash: sha256.digest('base64'),
     header: {
       title: `${getFieldValueForName(customerRequest.requestFieldValues, 'summary', 'value')}`,
-      subtitle: [`${customerRequest.issueKey}`]
+      subtitle: [`${customerRequest.issueKey}`],
+      subtitle_hl: [{
+        name: `${customerRequest.issueKey}`,
+        href: `${customerRequest._links.web}`
+      }]
 
     }
 
