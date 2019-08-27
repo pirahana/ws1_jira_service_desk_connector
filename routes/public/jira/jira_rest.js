@@ -5,7 +5,7 @@
 const rp = require('request-promise-native')
 require('dotenv').config()
 
-const SERVICEDESK_REQUEST_API = `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi`
+const SERVICEDESK_REQUEST_API = process.env.SERVICEDESK_REQUEST_API || `https://api.atlassian.com/ex/jira/${process.env.CLOUD_ID}/rest/servicedeskapi`
 
 /**
  * Returns a list of Customer Approvals assigned to the requesting user

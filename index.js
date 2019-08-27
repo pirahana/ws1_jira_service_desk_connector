@@ -41,8 +41,6 @@ app.use(
   vidm.validate
 )
 
-var hash = ''
-
 // various request endpoints
 app.get('/', handleDiscovery)
 app.use('/images', express.static(path.join(__dirname, 'routes/public/images')))

@@ -137,4 +137,15 @@ async function getPublicKey (options) {
   }
 }
 
+// for unit testing
+const testmethods = {}
+if (process.env.NODE_ENV === 'test') {
+  testmethods.envPublicKeyURL = envPublicKeyURL
+  testmethods.getPublicKey = getPublicKey
+  testmethods.vidmValidateAsync = vidmValidateAsync
+  testmethods.verifyAuthAsync = verifyAuthAsync
+  console.log('Exporting all vidm methods for testing')
+}
+
+exports.test = testmethods
 exports.validate = vidmValidateAsync

@@ -9,6 +9,18 @@
             "request": "launch",
             "name": "Run Connector",
             "program": "${workspaceFolder}/index.js"
-        }
+        },
+        {            
+            "type": "node",            
+            "request": "launch",            
+            "name": "Mocha all tests",            
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",     
+            "envFile": "${workspaceFolder}/test/support/env",       
+            "args": [                                
+               "${workspaceRoot}/test/**/*.js"            
+            ],            
+            "cwd": "${workspaceRoot}",   
+            "internalConsoleOptions": "openOnSessionStart"        
+         }
     ]
 }

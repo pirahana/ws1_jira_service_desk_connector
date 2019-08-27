@@ -1,0 +1,6 @@
+PORT = 9191
+CLOUD_ID = 'cac1784e-ee56-43f1-a806-593cb9c22d00'
+token_public_key_url = 'https://dev.hero.vmwservices.com/security/public-key'
+DEBUG = true
+NODE_ENV = 'test'
+SERVICEDESK_REQUEST_API='http://localhost:10001/servicedeskapi'
