@@ -1,30 +1,29 @@
 const { describe, it, before, after } = require('mocha')
 const assert = require('assert')
-const vidm = require('../routes/vidm')
+const auth = require('../routes/auth')
 const createMockJiraServer = require('./support/mockjiraserver').createServer
 
 // eslint-disable-next-line no-unused-vars
 var mockJira
 
-describe('vIDM tests:', function () {
+describe('auth tests:', function () {
   // setup includes bringing up the mock jira server
   before(function () {
     mockJira = createMockJiraServer()
   })
 
   it('envPublicKeyURL should return the URL from the env', function () {
-    const url = vidm.test.envPublicKeyURL()
+    const url = auth.test.envPublicKeyURL()
     assert(url === process.env.token_public_key_url, `expected ${process.env.token_public_key_url} got ${url}`)
   })
 
-  it('2- envPublicKeyURL should return the URL from the env', function () {
-    const url = vidm.test.envPublicKeyURL()
-    assert(url === process.env.token_public_key_url, `expected ${process.env.token_public_key_url} got ${url}`)
+  it('getPublicKey should return the public key', async function () {
+    const key = await auth.test.getPublicKey({ authPubKeyUrl: auth.test.envPublicKeyURL() })
+    assert(key.startsWith('-----BEGIN PUBLIC KEY-----'), 'Expected a public key but did not get one')
   })
 
   // teardown includes shutting down the mock jira server
   after(function () {
     mockJira.close()
   })
-
 })
