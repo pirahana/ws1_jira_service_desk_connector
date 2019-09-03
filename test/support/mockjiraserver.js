@@ -9,7 +9,7 @@ const approvalresponse = require('./files/approvalresponse')
  * Create a Mock Jira Service Desk service with the appropriate APIs to respond to the connector
  */
 function createServer () {
-  const port = process.env.MOCK_SERVER_PORT || 10001
+  const port = process.env.MOCK_JIRA_SERVER_PORT || 10001
   const app = express()
   app.use(bodyParser.json())
   const baseURL = `http://localhost:${port}`

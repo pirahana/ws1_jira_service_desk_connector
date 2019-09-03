@@ -8,7 +8,6 @@
 const jwt = require('jsonwebtoken')
 const rp = require('request-promise-native')
 const uuidv4 = require('uuid/v4')
-const fs = require('fs')
 
 const pubKeyCache = {}
 
@@ -23,12 +22,12 @@ async function authValidateAsync (req, res, next) {
       })
       return
     }
-    const vidmOptions = {
-      vIdmPubKeyUrl: authKeyURL.toString()
+    const authOptions = {
+      authPubKeyUrl: authKeyURL.toString()
     }
 
     try {
-      const decoded = await verifyAuthAsync(authorization, vidmOptions)
+      const decoded = await verifyAuthAsync(authorization, authOptions)
       res.locals.jwt = decoded
       res.locals.vidm = authKeyURL
       next()
@@ -107,28 +106,28 @@ function envPublicKeyURL () {
 
 /**
  * Retrieve the public key, either from cache or from the remote server
- * @param  {} options contains `vIdmPubKeyUrl` key and URL value where the public key can be found
+ * @param  {} options contains `authPubKeyUrl` key and URL value where the public key can be found
  */
 async function getPublicKey (options) {
-  if (pubKeyCache && (options.vIdmPubKeyUrl in pubKeyCache) && pubKeyCache[options.vIdmPubKeyUrl].expiresAtTime > Date.now()) {
-    return pubKeyCache[options.vIdmPubKeyUrl].contents
+  if (pubKeyCache && (options.authPubKeyUrl in pubKeyCache) && pubKeyCache[options.authPubKeyUrl].expiresAtTime > Date.now()) {
+    return pubKeyCache[options.authPubKeyUrl].contents
   }
 
   try {
-    const data = await rp(options.vIdmPubKeyUrl)
+    const data = await rp(options.authPubKeyUrl)
     const expiresAtTime = Date.now() + 3600000
     console.log(
       'Updating pub key cache for url: %s, set to expire around: %s',
-      options.vIdmPubKeyUrl,
+      options.authPubKeyUrl,
       new Date(expiresAtTime)
     )
 
-    if (options.vIdmPubKeyUrl in pubKeyCache) {
+    if (options.authPubKeyUrl in pubKeyCache) {
       console.log('Deleting old entry and replacing')
-      delete pubKeyCache[options.vIdmPubKeyUrl]
+      delete pubKeyCache[options.authPubKeyUrl]
     }
 
-    pubKeyCache[options.vIdmPubKeyUrl] = {
+    pubKeyCache[options.authPubKeyUrl] = {
       expiresAtTime: expiresAtTime,
       contents: data
     }

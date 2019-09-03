@@ -2,14 +2,18 @@ const { describe, it, before, after } = require('mocha')
 const assert = require('assert')
 const auth = require('../routes/auth')
 const createMockJiraServer = require('./support/mockjiraserver').createServer
+const createMockHeroServer = require('./support/mockheroserver').createServer
 
 // eslint-disable-next-line no-unused-vars
 var mockJira
+// eslint-disable-next-line no-unused-vars
+var mockHero
 
 describe('auth tests:', function () {
   // setup includes bringing up the mock jira server
   before(function () {
     mockJira = createMockJiraServer()
+    mockHero = createMockHeroServer()
   })
 
   it('envPublicKeyURL should return the URL from the env', function () {
@@ -25,5 +29,6 @@ describe('auth tests:', function () {
   // teardown includes shutting down the mock jira server
   after(function () {
     mockJira.close()
+    mockHero.close()
   })
 })
