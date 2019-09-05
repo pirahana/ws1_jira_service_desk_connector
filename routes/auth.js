@@ -7,7 +7,6 @@
 
 const jwt = require('jsonwebtoken')
 const rp = require('request-promise-native')
-const uuidv4 = require('uuid/v4')
 
 const pubKeyCache = {}
 
@@ -29,7 +28,7 @@ async function authValidateAsync (req, res, next) {
     try {
       const decoded = await verifyAuthAsync(authorization, authOptions)
       res.locals.jwt = decoded
-      res.locals.vidm = authKeyURL
+      res.locals.authKeyURL = authKeyURL
       next()
     } catch (error) {
       console.log('Identity verification failed:', error)
@@ -138,41 +137,6 @@ async function getPublicKey (options) {
   }
 }
 
-/**
- * Retrieve a JWT for use with this mock vIDM
- *
- * @param  {} '/SAAS/auth/oauthtoken'
- * @param  {} function(req,res)
- */
-function userAuthToken (req) {
-  const user = req.body.user || 'genericuser'
-  const tenant = req.body.tenant || 'vmware'
-  const domain = req.body.domain || 'VMWARE'
-  const protocol = req.body.protocol || req.protocol
-  const hostname = req.headers.host
-  const host = `${protocol}://${hostname}`
-  const issuer = `${host}/SAAS/auth`
-  const email = req.body.email || `${user}@${domain}`
-  const audience = `${host}/auth/oauthtoken`
-  const expires = req.body.expires || '7d'
-
-  const payload = {
-    jti: uuidv4(),
-    prn: `${user}@${tenant}`,
-    domain: domain,
-    eml: email,
-    iss: issuer
-  }
-  const jwtOptions = {
-    algorithm: 'RS256',
-    expiresIn: expires,
-    audience: audience,
-    subject: user
-  }
-
-  return jwt.sign(payload, privateKey, jwtOptions)
-}
-
 // for unit testing
 const testmethods = {}
 if (process.env.NODE_ENV === 'test') {
@@ -180,8 +144,7 @@ if (process.env.NODE_ENV === 'test') {
   testmethods.getPublicKey = getPublicKey
   testmethods.authValidateAsync = authValidateAsync
   testmethods.verifyAuthAsync = verifyAuthAsync
-  testmethods.userAuthToken = userAuthToken
-  console.log('Exporting all vidm methods for testing')
+  console.log('Exporting all auth methods for testing')
 }
 
 exports.test = testmethods

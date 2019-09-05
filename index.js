@@ -6,7 +6,7 @@ require('dotenv').config()
 const PORT = process.env.PORT
 
 const handleDiscovery = require('./routes/discovery').discovery
-const vidm = require('./routes/vidm')
+const auth = require('./routes/auth')
 const jira = require('./routes/public/jira/jira_routes')
 
 const app = express()
@@ -27,7 +27,7 @@ app.use(authenticatedAPIs, (req, res, next) => {
   res.locals.connectorAuthorization = req.header('x-connector-authorization')
   res.locals.authorization = req.header('authorization')
   if (process.env.DEBUG) {
-    console.log(`----`)
+    console.log('----')
     console.log(`AUTH: ${res.locals.authorization}`)
     console.log(`X-CONN-AUTH: ${res.locals.connectorAuthorization}`)
   }
@@ -38,7 +38,7 @@ app.use(authenticatedAPIs, (req, res, next) => {
 // validate JWT header before proceeding
 app.use(
   authenticatedAPIs,
-  vidm.validate
+  auth.validate
 )
 
 // various request endpoints
