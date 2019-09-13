@@ -55,4 +55,4 @@ app.post('/setHash', function (req, res) {
 })
 
 console.log(`CONNECTOR LISTENING ON PORT ${PORT}`)
-app.listen(PORT)
+module.exports = app.listen(PORT);
