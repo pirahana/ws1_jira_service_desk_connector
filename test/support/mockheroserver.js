@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const uuidv4 = require('uuid/v4')
 const jwt = require('jsonwebtoken')
+const mfPubKey = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0wqsQiPzw5iot83JJWcW\ntxE8j02lOYSXBpDeBwQL2KQAvD2a5TC7iHU3+xFV4bLoZcMVPL6xnYAQnMzQlym/\ncQScpZdG+Chz4u0KbjAN3tkG0k6zDSwSN0RjVvS3O9CByPhYfdYSYDEjwFtlmbZA\nO5yOOvu5jwUP/X6KfR+v5BrytZgnBH+JOoU6gIPRiEzgV19LyNbqOG7k35kikRw7\nocbMTRu5LfPxMI2AHz9ju7YyTyYG20zxKfVsrpNo5VspZcISZ/maFHK8thDWskkC\nQAoLxgGEC7+VnhmqIyLy5F/ge43437VmN7LU9LxbXqrB4nMrZlOOcWqmr1bYM7bL\noQIDAQAB\n-----END PUBLIC KEY-----\n'
 
 /**
  * Create a Mock Hero Server with the appropriate APIs to respond to the connector
@@ -24,6 +25,10 @@ function createServer () {
         res.status(200).send(data)
       }
     })
+  })
+
+  app.get('/public-key', (req, res) => {
+    res.status(200).send(mfPubKey)
   })
 
   app.get('/auth/oauthtoken', function (req, res) {
@@ -73,11 +78,16 @@ function createServer () {
   }
 
   const server = app.listen(port)
-  console.log('*** Mock jira is listening, call close() when finished')
+  console.log('*** Mock hero is listening, call close() when finished')
 
-  app.close = function () {
-    console.log('*** Mock jira is shutting down')
-    server.close()
+  app.close = function (fn) {
+    console.log('*** Mock hero is shutting down')
+    server.close(() => {
+      if (fn) {
+        fn()
+      }
+    }
+    )
   }
 
   return app

@@ -28,7 +28,8 @@ describe('auth tests:', function () {
 
   // teardown includes shutting down the mock jira server
   after(function () {
-    mockJira.close()
-    mockHero.close()
+    mockJira.close(() => {
+      mockHero.close()
+    })
   })
 })
