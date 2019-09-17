@@ -12,7 +12,7 @@ const SERVICEDESK_REQUEST_API = process.env.SERVICEDESK_REQUEST_API || `https://
  * @param  {} req request
  * @param  {} res response
  */
-async function getCustomerRequestsPendingApproval (connectorAuthorization) {
+const getCustomerRequestsPendingApproval = async (connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/request`,
     qs: {
@@ -35,7 +35,7 @@ async function getCustomerRequestsPendingApproval (connectorAuthorization) {
  * @param  {} issueKey identifier for the request
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function getApprovalDetail (issueKey, connectorAuthorization) {
+const getApprovalDetail = async (issueKey, connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/approval`,
     method: 'GET',
@@ -51,7 +51,7 @@ async function getApprovalDetail (issueKey, connectorAuthorization) {
  * @param  {} issueKey identifier for the request
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function postCommentOnRequest (issueKey, comment, connectorAuthorization) {
+const postCommentOnRequest = async (issueKey, comment, connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/comment`,
     method: 'POST',
@@ -75,7 +75,7 @@ async function postCommentOnRequest (issueKey, comment, connectorAuthorization) 
  * @param  {} connectorAuthorization authorization header including token_type and token
  * @returns final decision if it was approved or declined from the response
  */
-async function approveOrDenyApproval (userDecision, issueKey, approvalId, connectorAuthorization) {
+const approveOrDenyApproval = async (userDecision, issueKey, approvalId, connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/request/${issueKey}/approval/${approvalId}`,
     method: 'POST',
@@ -99,7 +99,7 @@ async function approveOrDenyApproval (userDecision, issueKey, approvalId, connec
  * @param  {} description description of the request
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function createCustomerRequest (serviceDeskId, requestTypeId, summary, description, connectorAuthorization) {
+const createCustomerRequest = async (serviceDeskId, requestTypeId, summary, description, connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/request`,
     method: 'POST',
@@ -124,7 +124,7 @@ async function createCustomerRequest (serviceDeskId, requestTypeId, summary, des
  * Retrieve the list of Service Desks
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function listServiceDesks (connectorAuthorization) {
+const listServiceDesks = async (connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/servicedesk`,
     method: 'GET',
@@ -150,7 +150,7 @@ async function listServiceDesks (connectorAuthorization) {
  * @param  {} serviceDeskId the ID of the service desk in which to look for request types
  * @param  {} connectorAuthorization authorization header including token_type and token
  */
-async function listRequestTypes (serviceDeskId, connectorAuthorization) {
+const listRequestTypes = async (serviceDeskId, connectorAuthorization) => {
   const options = {
     uri: `${SERVICEDESK_REQUEST_API}/servicedesk/${serviceDeskId}/requesttype`,
     method: 'GET',
@@ -172,10 +172,12 @@ async function listRequestTypes (serviceDeskId, connectorAuthorization) {
     )
 }
 
-exports.getCustomerRequestsPendingApproval = getCustomerRequestsPendingApproval
-exports.getApprovalDetail = getApprovalDetail
-exports.approveOrDenyApproval = approveOrDenyApproval
-exports.createCustomerRequest = createCustomerRequest
-exports.postCommentOnRequest = postCommentOnRequest
-exports.listServiceDesks = listServiceDesks
-exports.listRequestTypes = listRequestTypes
+module.exports = {
+  getCustomerRequestsPendingApproval,
+  getApprovalDetail,
+  approveOrDenyApproval,
+  createCustomerRequest,
+  postCommentOnRequest,
+  listServiceDesks,
+  listRequestTypes
+}

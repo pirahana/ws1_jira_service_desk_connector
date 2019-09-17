@@ -11,7 +11,7 @@ const urljoin = require('url-join')
  * Express looks for X-Forwarded-Proto
  * @param  {} req express request
  */
-function protocol (req) {
+const protocol = (req) => {
   return req.protocol
 }
 
@@ -19,7 +19,7 @@ function protocol (req) {
  * request.hostname is broken in Express 4 so we have to deal with the X-Forwarded- headers ourselves
  * @param  {} req express request
  */
-function derivedBaseUrl (req) {
+const derivedBaseUrl = (req) => {
   const host = req.headers['x-forwarded-host'] || req.headers.host
   const proto = req.headers['x-forwarded-proto'] || protocol(req)
   const forwardedPort = req.headers['x-forwarded-port']
@@ -32,7 +32,7 @@ function derivedBaseUrl (req) {
   }
 }
 
-function imageURL (req) {
+const imageURL = (req) => {
   const baseURL = derivedBaseUrl(req)
   return `${baseURL}/images/connector.png`
 }
@@ -41,7 +41,7 @@ function imageURL (req) {
  * @param  {} req
  * @param  {} virtualURL
  */
-function prepareURL (req, virtualURL) {
+const prepareURL = (req, virtualURL) => {
   const routingPrefix = req.headers['x-routing-prefix'] || ''
   const forwardedPrefix = req.headers['x-forwarded-prefix'] || ''
   return urljoin(routingPrefix, forwardedPrefix, virtualURL)
@@ -52,7 +52,7 @@ function prepareURL (req, virtualURL) {
  * @param  {} req express request
  * @param  {} res express response
  */
-function discovery (req, res) {
+const discovery = (req, res) => {
   const baseURL = derivedBaseUrl(req)
 
   const discoveryJSON = {
@@ -77,6 +77,8 @@ function discovery (req, res) {
   res.json(discoveryJSON)
 }
 
-exports.discovery = discovery
-exports.imageURL = imageURL
-exports.prepareURL = prepareURL
+module.exports = {
+  discovery,
+  imageURL,
+  prepareURL
+}

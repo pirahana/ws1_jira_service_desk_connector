@@ -1,4 +1,4 @@
-function result (baseurl, approvalIssueId) {
+const result = (baseurl, approvalIssueId) => {
   return {
     size: 1,
     start: 0,

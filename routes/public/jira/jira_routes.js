@@ -11,7 +11,7 @@ var hash = 'create_card'
  * Set the backend_id and update the hash for the create card, to allow for updates and forcing a new card
  * @param  {} newHash
  */
-function setHash (newHash) {
+const setHash = (newHash) => {
   if (newHash) {
     hash = newHash
   }
@@ -21,7 +21,7 @@ function setHash (newHash) {
  * @param  {} req
  * @param  {} res
  */
-async function handleCards (req, res) {
+const handleCards = async (req, res) => {
   try {
     const connectorAuthorization = res.locals.connectorAuthorization
     const customerRequests = await jiraRest.getCustomerRequestsPendingApproval(connectorAuthorization)
@@ -57,7 +57,7 @@ async function handleCards (req, res) {
  * @param  {} req
  * @param  {} res
  */
-async function handleListServiceDesks (req, res) {
+const handleListServiceDesks = async (req, res) => {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
     const serviceDesks = await jiraRest.listServiceDesks(connectorAuthorization)
@@ -81,7 +81,7 @@ async function handleListServiceDesks (req, res) {
  * @param  {} req
  * @param  {} res
  */
-async function handleListRequestTypes (req, res) {
+const handleListRequestTypes = async (req, res) => {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
     const serviceDeskId = req.body.serviceDeskId || 1
@@ -107,7 +107,7 @@ async function handleListRequestTypes (req, res) {
  * @param  {} req
  * @param  {} res
  */
-async function handleApprovalAction (req, res) {
+const handleApprovalAction = async (req, res) => {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
     const issueKey = req.body.issueKey
@@ -158,7 +158,7 @@ async function handleApprovalAction (req, res) {
  * @param  {} req
  * @param  {} res
  */
-async function handleCreateCustomerRequest (req, res) {
+const handleCreateCustomerRequest = async (req, res) => {
   try {
     const connectorAuthorization = req.header('x-connector-authorization')
     const serviceDeskId = req.body.serviceDeskId || 1
@@ -184,9 +184,11 @@ async function handleCreateCustomerRequest (req, res) {
   }
 }
 
-exports.setHash = setHash
-exports.handleCards = handleCards
-exports.handleApprovalAction = handleApprovalAction
-exports.handleCreateCustomerRequest = handleCreateCustomerRequest
-exports.handleListServiceDesks = handleListServiceDesks
-exports.handleListRequestTypes = handleListRequestTypes
+module.exports = {
+  setHash,
+  handleCards,
+  handleApprovalAction,
+  handleCreateCustomerRequest,
+  handleListServiceDesks,
+  handleListRequestTypes
+}

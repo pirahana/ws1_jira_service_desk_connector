@@ -1,4 +1,4 @@
-function result (baseURL, approvalIssueId, approvalId, decision) {
+const result = (baseURL, approvalIssueId, approvalId, decision) => {
   return {
     id: `${approvalId}`,
     name: 'Waiting for approval',

@@ -1,4 +1,4 @@
-function result (baseurl, serviceDeskId) {
+const result = (baseurl, serviceDeskId) => {
   return {
     _expands: [
       'field'

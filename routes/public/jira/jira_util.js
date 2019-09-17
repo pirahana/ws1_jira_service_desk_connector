@@ -9,7 +9,7 @@ const discovery = require('../../discovery')
  * @param  {} desiredReturnField the field in the record that should be returned
  * @returns contents of the specified field, or an empty string
  */
-function getFieldValueForName (requestFieldValues, desiredName, desiredReturnField) {
+const getFieldValueForName = (requestFieldValues, desiredName, desiredReturnField) => {
   const matches = requestFieldValues.filter((field) => {
     return field.fieldId === desiredName
   })
@@ -24,7 +24,7 @@ function getFieldValueForName (requestFieldValues, desiredName, desiredReturnFie
    * @param  {} customerRequest the request object from which to make a card
    * @returns JSON mobile flows card
    */
-function makeCardFromCustomerRequest (req, customerRequest) {
+const makeCardFromCustomerRequest = (req, customerRequest) => {
   if (process.env.DEBUG) {
     console.log(`ACTION URL: ${discovery.prepareURL(req, '/approvalAction')}`)
   }
@@ -49,7 +49,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
       },
       {
         type: 'GENERAL',
-        title: `Request Type`,
+        title: 'Request Type',
         description: `${customerRequest.requestType.name}`
       },
       {
@@ -126,7 +126,7 @@ function makeCardFromCustomerRequest (req, customerRequest) {
  * Create a static card for making Customer Requests
  * @param  {} req request object, used for formatting URLs
  */
-function makeStaticTicketCreationCard (req) {
+const makeStaticTicketCreationCard = (req) => {
   const createRequest = req.hash || 'create_request'
   var sha256 = crypto.createHash('sha256')
   sha256.update(createRequest, 'utf8')
@@ -136,7 +136,7 @@ function makeStaticTicketCreationCard (req) {
     },
     body: {
       fields: [],
-      description: `Submit a Request`
+      description: 'Submit a Request'
     },
     actions: [{
       action_key: 'USER_INPUT',
@@ -169,12 +169,14 @@ function makeStaticTicketCreationCard (req) {
     backend_id: createRequest,
     hash: sha256.digest('base64'),
     header: {
-      title: `Create Customer Request`
+      title: 'Create Customer Request'
     }
   }
 
   return responseCard
 }
 
-exports.makeCardFromCustomerRequest = makeCardFromCustomerRequest
-exports.makeStaticTicketCreationCard = makeStaticTicketCreationCard
+module.exports = {
+  makeCardFromCustomerRequest,
+  makeStaticTicketCreationCard
+}

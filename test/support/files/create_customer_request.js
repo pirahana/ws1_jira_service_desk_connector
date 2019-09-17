@@ -1,4 +1,4 @@
-function result (baseUrl, summary, description) {
+const result = (baseUrl, summary, description) => {
   return {
     _expands: [
       'participant',

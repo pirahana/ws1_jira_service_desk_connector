@@ -1,8 +1,8 @@
-const { describe, it, before, after } = require('mocha')
+require('dotenv').config()
 const assert = require('assert')
 const auth = require('../routes/auth')
-const createMockJiraServer = require('./support/mockjiraserver').createServer
-const createMockHeroServer = require('./support/mockheroserver').createServer
+const createMockJiraServer = require('./support/mock_jira_server').createServer
+const createMockHeroServer = require('./support/mock_hero_server').createServer
 
 // eslint-disable-next-line no-unused-vars
 var mockJira

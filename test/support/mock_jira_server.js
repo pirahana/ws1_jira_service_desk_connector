@@ -1,15 +1,15 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const servicedesks = require('./files/listservicedesks')
-const requesttypes = require('./files/getrequesttypes')
-const requests = require('./files/getcustomerrequests')
-const approval = require('./files/getapproval')
-const approvalresponse = require('./files/approvalresponse')
-const createRequest = require('./files/createcustomerrequest')
+const servicedesks = require('./files/list_service_desks')
+const requesttypes = require('./files/get_request_types')
+const requests = require('./files/get_customer_requests')
+const approval = require('./files/get_approval')
+const approvalresponse = require('./files/approval_response')
+const createRequest = require('./files/create_customer_request')
 /**
  * Create a Mock Jira Service Desk service with the appropriate APIs to respond to the connector
  */
-function createServer () {
+const createServer = () => {
   const port = process.env.MOCK_JIRA_SERVER_PORT || 10001
   const app = express()
   app.use(bodyParser.json())
@@ -58,4 +58,6 @@ function createServer () {
   return app
 }
 
-exports.createServer = createServer
+module.exports = {
+  createServer
+}

@@ -1,4 +1,4 @@
-function result (baseurl) {
+const result = (baseurl) => {
   return {
     size: 1,
     start: 0,

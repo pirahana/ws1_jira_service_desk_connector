@@ -8,12 +8,12 @@ const mfPubKey = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMI
 /**
  * Create a Mock Hero Server with the appropriate APIs to respond to the connector
  */
-function createServer () {
+const createServer = () => {
   const port = process.env.MOCK_HERO_SERVER_PORT || 10002
   const app = express()
   app.use(bodyParser.json())
 
-  function publicKeyPath () {
+  const publicKeyPath = () => {
     return './test/support/files/keys/public.pem'
   }
 
@@ -41,7 +41,7 @@ function createServer () {
  * @param  {} '/SAAS/auth/oauthtoken'
  * @param  {} function(req,res)
  */
-  function userAuthToken (req) {
+  const userAuthToken = (req) => {
     const user = req.body.user || 'genericuser'
     const tenant = req.body.tenant || 'vmware'
     const domain = req.body.domain || 'VMWARE'
@@ -73,14 +73,14 @@ function createServer () {
   /**
  * TODO:  this should not require access to test data, maybe
  */
-  function readPrivateKey () {
+  const readPrivateKey = () => {
     return fs.readFileSync('../test/support/files/keys/private.pem')
   }
 
   const server = app.listen(port)
   console.log('*** Mock hero is listening, call close() when finished')
 
-  app.close = function (fn) {
+  app.close = (fn) => {
     console.log('*** Mock hero is shutting down')
     server.close(() => {
       if (fn) {
@@ -93,4 +93,6 @@ function createServer () {
   return app
 }
 
-exports.createServer = createServer
+module.exports = {
+  createServer
+}

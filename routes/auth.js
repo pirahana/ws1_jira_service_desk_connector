@@ -10,7 +10,7 @@ const rp = require('request-promise-native')
 
 const pubKeyCache = {}
 
-async function authValidateAsync (req, res, next) {
+const authValidateAsync = async (req, res, next) => {
   const authorization = req.header('authorization')
 
   if (authorization) {
@@ -43,7 +43,7 @@ async function authValidateAsync (req, res, next) {
   }
 }
 
-async function verifyAuthAsync (authorization, options) {
+const verifyAuthAsync = async (authorization, options) => {
   var pubKeyContents
   try {
     pubKeyContents = await getPublicKey(options)
@@ -99,7 +99,7 @@ async function verifyAuthAsync (authorization, options) {
   }
 }
 
-function envPublicKeyURL () {
+const envPublicKeyURL = () => {
   return process.env.token_public_key_url
 }
 
@@ -107,7 +107,7 @@ function envPublicKeyURL () {
  * Retrieve the public key, either from cache or from the remote server
  * @param  {} options contains `authPubKeyUrl` key and URL value where the public key can be found
  */
-async function getPublicKey (options) {
+const getPublicKey = async (options) => {
   if (pubKeyCache && (options.authPubKeyUrl in pubKeyCache) && pubKeyCache[options.authPubKeyUrl].expiresAtTime > Date.now()) {
     return pubKeyCache[options.authPubKeyUrl].contents
   }
@@ -147,5 +147,7 @@ if (process.env.NODE_ENV === 'test') {
   console.log('Exporting all auth methods for testing')
 }
 
-exports.test = testmethods
-exports.validate = authValidateAsync
+module.exports = {
+  test: testmethods,
+  validate: authValidateAsync
+}
